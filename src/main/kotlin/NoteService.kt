@@ -1,114 +1,52 @@
-object NoteService {
-    var notesList: MutableList<Note> = mutableListOf()
+object NoteService : CrudService<Note> {
 
-    fun getNotesList() {
-        for (note in notesList) println("${note.id} - ${note.text}")
-    }
+    private var notesList = mutableListOf<Note>()
 
-    fun getNoteById(id: Int): Note? {
-        var foundNote: Note? = null
-        for (note in notesList) {
-            if (note.id == id) foundNote = note
-        }
-        if (foundNote == null) println("Note not found")
-        return foundNote
-    }
+    override val elements: MutableList<Note>
+        get() = notesList
 
     fun generateId(): Int {
         return if (notesList.isEmpty()) 1 else notesList.last().id + 1
     }
 
-    fun createComment(noteId: Int, comment: Comment): Boolean {
-        var isTrue = false
-        for (note in notesList) {
-            if (noteId == note.id) {
-                note.comments.add(comment)
-                isTrue = true
-            }
-        }
-        return isTrue
+    override fun add(entity: Note): Boolean {
+        notesList.add(entity)
+        return true
     }
 
-    fun deleteComment(noteId: Int, commentId: Int): Boolean {
-        var isTrue = false
+    override fun delete(id: Int): Boolean {
         for (note in notesList) {
-            if (noteId == note.id) {
-                for (comment in note.comments) {
-                    if (commentId == comment.id) {
-                        comment.isDelete = true
-                        isTrue = true
-                    }
-                }
+            if (id == note.id) {
+                note.isDelete = true
+                return true
             }
         }
-        return isTrue
+        return false
     }
 
-    fun editComment(noteId: Int, commentId: Int, commentText: String): Boolean {
-        var isTrue = false
-        for (note in notesList) {
-            if (noteId == note.id) {
-                for (comment in note.comments) {
-                    if (commentId == comment.id) {
-                        comment.text = commentText
-                        isTrue = true
-                    }
-                }
-            }
-        }
-        return isTrue
-    }
-
-    fun restoreComment(noteId: Int, commentId: Int): Boolean {
-        var isTrue = false
-        for (note in notesList) {
-            if (noteId == note.id) {
-                for (comment in note.comments) {
-                    if (commentId == comment.id) {
-                        comment.isDelete = true
-                        isTrue = true
-                    }
-                }
-            }
-        }
-        return isTrue
-    }
-
-    fun addNote(note: Note): MutableList<Note> {
-        notesList.add(note)
+    override fun read(): List<Note> {
         return notesList
     }
 
-    fun deleteNote(noteId: Int): Boolean {
-        var isTrue = false
-        for (note in notesList) {
-            if (noteId == note.id) {
-                note.isDelete = true
-                isTrue = true
-            }
+    override fun getById(id: Int): Note? = notesList.find { it.id == id }
+
+    override fun restore(id: Int): Boolean {
+        val deletedNote = getById(id)
+        if (deletedNote != null) {
+            if (deletedNote.isDelete) deletedNote.isDelete = false
+            edit(deletedNote)
+            return true
         }
-        return isTrue
+        return false
     }
 
-    fun editNote(noteId: Int, newNote: Note): Boolean {
-        var isTrue = false
-        for (note in notesList) {
-            if (noteId == note.id) {
-                note.title = newNote.title
-                note.text = newNote.text
-                isTrue = true
+    override fun edit(entity: Note): Boolean {
+        for ((index, note) in notesList.withIndex()) {
+            if (note.id == entity.id) {
+                notesList[index] = entity
+                return true
             }
         }
-        return isTrue
-    }
-
-    fun getComments(noteId: Int) {
-        for (note in notesList) {
-            if (noteId == note.id) {
-                for (comment in note.comments) {
-                    println("${comment.id} - ${comment.text}")
-                }
-            }
-        }
+        return false
     }
 }
