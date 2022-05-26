@@ -15,10 +15,10 @@ class NoteServiceTest {
             1,
             "Some comment"
         )
-        val (noteId) = note
+//        val (noteId) = note
         //act
-        NoteService.addNote(note)
-        val result = NoteService.createComment(noteId, comment)
+        NoteService.add(note)
+        val result = CommentService.add(comment)
         //assert
         assertTrue(result)
     }
@@ -34,12 +34,12 @@ class NoteServiceTest {
             1,
             "Some comment"
         )
-        val (noteId) = note
+//        val (noteId) = note
         val (commentId) = comment
         //act
-        NoteService.addNote(note)
-        NoteService.createComment(noteId, comment)
-        val result = NoteService.deleteComment(noteId, commentId)
+        NoteService.add(note)
+        CommentService.add(comment)
+        val result = CommentService.delete(commentId)
         //assert
         assertTrue(result)
     }
@@ -55,13 +55,13 @@ class NoteServiceTest {
             1,
             "Some comment"
         )
-        val newText = "New text"
-        val (noteId) = note
-        val (commentId) = comment
+        val newComment = Comment(1,
+            "New text"
+        )
         //act
-        NoteService.addNote(note)
-        NoteService.createComment(noteId, comment)
-        val result = NoteService.editComment(noteId, commentId, newText)
+        NoteService.add(note)
+        CommentService.add(comment)
+        val result = CommentService.edit(newComment)
         //assert
         assertTrue(result)
     }
@@ -77,13 +77,12 @@ class NoteServiceTest {
             1,
             "Some comment"
         )
-        val (noteId) = note
         val (commentId) = comment
         //act
-        NoteService.addNote(note)
-        NoteService.createComment(noteId, comment)
-        NoteService.deleteComment(noteId, commentId)
-        val result = NoteService.restoreComment(noteId, commentId)
+        NoteService.add(note)
+        CommentService.add(comment)
+        CommentService.delete(commentId)
+        val result = CommentService.restore(commentId)
         //assert
         assertTrue(result)
     }
@@ -96,8 +95,8 @@ class NoteServiceTest {
             text = "Some text"
         )
         //act
-        NoteService.addNote(note)
-        val result = NoteService.notesList.isNotEmpty()
+        NoteService.add(note)
+        val result = NoteService.elements.isNotEmpty()
         //assert
         assertTrue(result)
     }
@@ -111,8 +110,8 @@ class NoteServiceTest {
         )
         val (originalNoteId) = note
         //act
-        NoteService.addNote(note)
-        val result = NoteService.deleteNote(originalNoteId)
+        NoteService.add(note)
+        val result = NoteService.delete(originalNoteId)
         //assert
         assertTrue(result)
     }
@@ -126,12 +125,13 @@ class NoteServiceTest {
         )
         val (originalNoteId) = note
         val newNote = Note(
+            id = originalNoteId,
             title = "New title",
             text = "new text"
         )
         //act
-        NoteService.addNote(note)
-        val result = NoteService.editNote(originalNoteId, newNote)
+        NoteService.add(note)
+        val result = NoteService.edit(newNote)
         //assert
         assertTrue(result)
     }
